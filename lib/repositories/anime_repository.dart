@@ -1,44 +1,34 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import '../models/anime.dart';
-class AnimeRepository {
-  static const String _baseUrl = 'https://api.jikan.moe/v4';
+import 'package:anime_verse/models/anime.dart';
+import 'package:jikan_api/jikan_api.dart' as jikan;
 
-  final http.Client _client = http.Client();
+class AnimeRepository {
+  final jikan.Jikan _jikan = jikan.Jikan();
 
   Future<List<Anime>> getTopAnime({int page = 1}) async {
     try {
-      final url = Uri.parse('$_baseUrl/top/anime').replace(
-        queryParameters: {'page': page.toString()},
-      );
+      final response = await _jikan.getTopAnime(page: page);
 
-      final response = await _client.get(url);
+      await Future.delayed(const Duration(milliseconds: 400));
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonData = json.decode(response.body);
+      final animeList = response.map((jikanAnime) {
+        return Anime(
+          malId: jikanAnime.malId,
+          title: jikanAnime.title,
+          imageUrl: jikanAnime.imageUrl,
+          largeImageUrl: jikanAnime.imageUrl,
+          genres: jikanAnime.genres.map((g) => g.name).toList(),
+          score: jikanAnime.score,
+          episodes: jikanAnime.episodes,
+          synopsis: jikanAnime.synopsis,
+          type: jikanAnime.type,
+          year: jikanAnime.year,
+          ageRating: jikanAnime.rating,
+        );
+      }).toList();
 
-        final List<dynamic> animeDataList = jsonData['data'] as List;
-
-        final animeList = animeDataList.map((animeJson) {
-          return Anime.fromJson(animeJson as Map<String, dynamic>);
-        }).toList();
-
-        await Future.delayed(const Duration(milliseconds: 400));
-
-        return animeList.where((anime) => anime.isAppropriateContent).toList();
-
-      } else if (response.statusCode == 429) {
-        throw Exception('Rate limit exceeded. Please wait a moment and try again.');
-      } else if (response.statusCode == 404) {
-        throw Exception('Top anime data not found.');
-      } else {
-        throw Exception('Failed to load top anime. Status: ${response.statusCode}');
-      }
+      return animeList.where((anime) => anime.isAppropriateContent).toList();
     } catch (e) {
-      if (e is Exception) {
-        rethrow;
-      }
-      throw Exception('Network error: $e');
+      throw Exception('Failed to fetch top anime: $e');
     }
   }
 
@@ -48,76 +38,54 @@ class AnimeRepository {
         return [];
       }
 
-      final url = Uri.parse('$_baseUrl/anime').replace(
-        queryParameters: {
-          'q': query.trim(),
-          'limit': limit.toString(),
-        },
-      );
+      final response = await _jikan.searchAnime(query: query);
 
-      final response = await _client.get(url);
+      await Future.delayed(const Duration(milliseconds: 400));
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonData = json.decode(response.body);
+      final animeList = response.map((jikanAnime) {
+        return Anime(
+          malId: jikanAnime.malId,
+          title: jikanAnime.title,
+          imageUrl: jikanAnime.imageUrl,
+          largeImageUrl: jikanAnime.imageUrl,
+          genres: jikanAnime.genres.map((g) => g.name).toList(),
+          score: jikanAnime.score,
+          episodes: jikanAnime.episodes,
+          synopsis: jikanAnime.synopsis,
+          type: jikanAnime.type,
+          year: jikanAnime.year,
+          ageRating: jikanAnime.rating,
+        );
+      }).toList();
 
-        final List<dynamic> animeDataList = jsonData['data'] as List;
-
-        final animeList = animeDataList.map((animeJson) {
-          return Anime.fromJson(animeJson as Map<String, dynamic>);
-        }).toList();
-
-        await Future.delayed(const Duration(milliseconds: 400));
-
-        return animeList.where((anime) => anime.isAppropriateContent).toList();
-
-      } else if (response.statusCode == 429) {
-        throw Exception('Rate limit exceeded. Please wait a moment and try again.');
-      } else if (response.statusCode == 404) {
-        return [];
-      } else {
-        throw Exception('Failed to search anime. Status: ${response.statusCode}');
-      }
+      return animeList.where((anime) => anime.isAppropriateContent).toList();
     } catch (e) {
-      if (e is Exception) {
-        rethrow;
-      }
-      throw Exception('Network error: $e');
+      throw Exception('Failed to search anime: $e');
     }
   }
 
   Future<Anime> getAnimeById(int malId) async {
     try {
-      final url = Uri.parse('$_baseUrl/anime/$malId');
+      final response = await _jikan.getAnime(malId);
 
-      final response = await _client.get(url);
+      await Future.delayed(const Duration(milliseconds: 400));
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonData = json.decode(response.body);
-
-        final Map<String, dynamic> animeData = jsonData['data'] as Map<String, dynamic>;
-
-        final anime = Anime.fromJson(animeData);
-
-        await Future.delayed(const Duration(milliseconds: 400));
-
-        return anime;
-
-      } else if (response.statusCode == 429) {
-        throw Exception('Rate limit exceeded. Please wait a moment and try again.');
-      } else if (response.statusCode == 404) {
-        throw Exception('Anime with ID $malId not found.');
-      } else {
-        throw Exception('Failed to load anime details. Status: ${response.statusCode}');
-      }
+      return Anime(
+        malId: response.malId,
+        title: response.title,
+        imageUrl: response.imageUrl,
+        largeImageUrl: response.imageUrl,
+        genres: response.genres.map((g) => g.name).toList(),
+        score: response.score,
+        episodes: response.episodes,
+        synopsis: response.synopsis,
+        type: response.type,
+        year: response.year,
+        status: response.status,
+        ageRating: response.rating,
+      );
     } catch (e) {
-      if (e is Exception) {
-        rethrow;
-      }
-      throw Exception('Network error: $e');
+      throw Exception('Failed to fetch anime details: $e');
     }
-  }
-
-  void dispose() {
-    _client.close();
   }
 }
