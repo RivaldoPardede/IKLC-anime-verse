@@ -63,14 +63,14 @@ This project was built progressively across **8 teaching modules**:
 
 <table>
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/3d2fc70a-5c5c-406e-97be-6eb3f522b062" width="250"/><br/><b>Sign In</b></td>
-    <td><img src="https://github.com/user-attachments/assets/de6b3acc-dc88-4c53-903e-5f3d2304247c" width="250"/><br/><b>Sign Up</b></td>
-    <td><img src="https://github.com/user-attachments/assets/fbd975c2-5487-46ec-ad2a-6eba18f07ed5" width="250"/><br/><b>Home</b></td>
+    <td><img src="assets/readme/Sign In.png" width="250"/><br/><b>Sign In</b></td>
+    <td><img src="assets/readme/Sign Up.png" width="250"/><br/><b>Sign Up</b></td>
+    <td><img src="assets/readme/Home.png" width="250"/><br/><b>Home</b></td>
   </tr>
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/ec73d509-da1d-478f-9268-ede83f789eba" width="250"/><br/><b>Anime Detail</b></td>
-    <td><img src="https://github.com/user-attachments/assets/a8c1b730-ae2e-4df3-a333-73299766805f" width="250"/><br/><b>Favorites</b></td>
-    <td><img src="https://github.com/user-attachments/assets/af2ec15c-1d90-4ce3-a902-3a0ee1ff84dc" width="250"/><br/><b>Profile</b></td>
+    <td><img src="assets/readme/Anime Detail.png" width="250"/><br/><b>Anime Detail</b></td>
+    <td><img src="assets/readme/Favorites.png" width="250"/><br/><b>Favorites</b></td>
+    <td><img src="assets/readme/Profile.png" width="250"/><br/><b>Profile</b></td>
   </tr>
 </table>
 
